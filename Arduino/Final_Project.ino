@@ -8,6 +8,7 @@
 #define MIN_ANGLE 0
 #define MAX_ANGLE 180
 #define DEFAULT_ANGLE 90
+#define DISTANCE 40
 
 
 SR04 sr04 = SR04(ECHO_PIN,TRIG_PIN);
@@ -18,6 +19,7 @@ int dist = 0;
 int returnAngle = 0;
 int returnFlag = 0;
 int centerAngle = DEFAULT_ANGLE;
+int movSpeed = 1;
 
 
 void setup() {
@@ -35,11 +37,45 @@ void loop() {
 void receiveSerial() {
   if (Serial.available() > 0) {
     char data = Serial.read();
-    if (data == '1') {
-      returnAngle = 0;
-      delay(1000);
-    } else if (data == '0') {
+    switch (data) {
+      case '1':
+        movSpeed = 1;
+        break;
+      case '2':
+        movSpeed = 2;
+        break;
+      case '3':
+        movSpeed = 3;
+        break;
+      case '4':
+        movSpeed = 4;
+        break;
+      case '5':
+        movSpeed = 5;
+        break;
+      case '6':
+        movSpeed = 6;
+        break;
+      case '7':
+        movSpeed = 7;
+        break;
+      case '8':
+        movSpeed = 8;
+        break;
+      case '9':
+        movSpeed = 9;
+        break;
+      case '10':
+        movSpeed = 10;
+        break;
+      default:
+        break;
+    }
+
+    if (data == 'reset') {
       centerAngle = DEFAULT_ANGLE;
+      pos = 90;
+      delay(1000);
     }
   }
 }
@@ -51,17 +87,17 @@ void moveServo() {
     Serial.println("cm");
     Serial.println(centerAngle);
     Serial.println(returnFlag);
-    if (dist < 50) {
+    if (dist < DISTANCE) {
       returnAngle = 0;
       centerAngle = pos;
       break;
     }
     
     if (returnFlag == 0) {
-      pos += 1;
+      pos += movSpeed;
       myservo.write(pos);
     } else if (returnFlag == 1) {
-      pos -= 1;
+      pos -= movSpeed;
       myservo.write(pos);
     }
 
@@ -74,5 +110,5 @@ void moveServo() {
     }
 
   }
-  returnAngle += 1;
+  returnAngle += 10;
 }
